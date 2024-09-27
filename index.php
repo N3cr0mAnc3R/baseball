@@ -1,9 +1,9 @@
 <?php
 include 'header.php';
-// Подключение к базе данных
+// Verbindung zur Datenbank herstellen
 $pdo = new PDO('mysql:host=127.127.126.50;dbname=baseball_club', 'root', '');
 
-// Получаем данные игроков и их позиции
+// Wir erhalten die Daten der Spieler und ihre Positionen
 $query = $pdo->query("SELECT p.name, r.position, p.wins, p.losses, p.points
                       FROM ranking r
                       JOIN players p ON p.id = r.player_id
@@ -16,17 +16,19 @@ $players = $query->fetchAll(PDO::FETCH_ASSOC);
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Рейтинг игроков</title>
+    <title>Spielerrangliste</title>
 </head>
 <body>
-    <h1>Рейтинг игроков</h1>
-    <table border="1">
+ <div class="container">
+    <h1>Spielerrangliste</h1>
+
+    <table class="table table-bordered table-striped">
         <tr>
-            <th>Место</th>
-            <th>Имя игрока</th>
-            <th>Победы</th>
-            <th>Поражения</th>
-            <th>Очки</th>
+            <th>Platz</th>
+            <th>Spielername</th>
+            <th>Siege</th>
+            <th>Niederlagen</th>
+            <th>Punkte</th>
         </tr>
         <?php foreach ($players as $player): ?>
             <tr>
@@ -37,6 +39,7 @@ $players = $query->fetchAll(PDO::FETCH_ASSOC);
                 <td><?= $player['points'] ?></td>
             </tr>
         <?php endforeach; ?>
-    </table>
+    </table>    
+</div>
 </body>
 </html>

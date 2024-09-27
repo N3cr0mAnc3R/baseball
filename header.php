@@ -6,7 +6,14 @@
     <title>Baseball Ranking</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+ <style>
+        .container > h1 {
+		margin-bottom: 2rem;
+		margin-top: 1rem;
+        }
+    </style>
+
 </head>
 <body>
 
@@ -18,18 +25,34 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link" href="index.php">Home</a>
+                <a class="nav-link" href="index.php">Startseite</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="insert.php">Add Player</a>
+                <a class="nav-link" href="insert.php">Spieler hinzufügen</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="rating.php">View Rankings</a>
+                <a class="nav-link" href="games.php">Alle Spiele</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="admin.php">Admin</a>
+                <a class="nav-link" href="rating.php">Ranglisten anzeigen</a>
             </li>
 
+<?php
+    if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
+        echo "<li class='nav-item'>
+                <a class='nav-link' href='admin.php'>Admin</a>
+            </li> 
+            <li class='nav-item'>
+                <a class='nav-link' href='logout.php'>Abmelden</a>
+            </li>";
+    }
+    else {
+        echo "<li class='nav-item'>
+                <a class='nav-link' href='login.php'>Anmelden</a>
+            </li>";
+    }
+?>
+            
         </ul>
     </div>
 </nav>

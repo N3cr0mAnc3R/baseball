@@ -1,92 +1,100 @@
 <?php
+session_start();
+
+// Überprüfen, ob der Benutzer angemeldet ist
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+    header('Location: login.php'); // Weiterleitung zur Anmeldeseite, wenn nicht angemeldet
+    exit;
+}
 include 'header.php';
 $pdo = new PDO('mysql:host=127.127.126.50;dbname=baseball_club', 'root', '');
 
-// Сброс рейтинга
+// Zurücksetzen des Rankings
 if (isset($_POST['reset'])) {
     $pdo->exec("DELETE FROM games");
     $pdo->exec("UPDATE players SET wins = 0, losses = 0, points = 0");
 
- // Получаем список всех игроков и сортируем их по ID (или по любому другому критерию)
+    // Abrufen aller Spieler und Sortieren nach ID (oder einem anderen Kriterium)
     $players = $pdo->query("SELECT id FROM players")->fetchAll(PDO::FETCH_ASSOC);
 
-    // Устанавливаем новые позиции для всех игроков на основе порядка их в базе данных
-    $position = 1; // Начальная позиция
+    // Festlegen neuer Positionen für alle Spieler basierend auf ihrer Reihenfolge in der Datenbank
+    $position = 1; // Anfangsposition
     foreach ($players as $player) {
-        // Обновляем позицию игрока в таблице рейтинга
+        // Aktualisieren der Position des Spielers in der Rangliste
         $stmt = $pdo->prepare("UPDATE ranking SET position = ? WHERE player_id = ?");
         $stmt->execute([$position, $player['id']]);
         $position++;
     }
 }
 
-// Добавление нового игрока
+// Hinzufügen eines neuen Spielers
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['new_player'])) {
     $name = $_POST['name'];
     $stmt = $pdo->prepare("INSERT INTO players (name) VALUES (?)");
     $stmt->execute([$name]);
 
-    // Добавляем игрока в таблицу рейтинга
+    // Spieler zur Rangliste hinzufügen
     $player_id = $pdo->lastInsertId();
-// Step 1: Get the current count of rows in the ranking table
-$stmt = $pdo->query("SELECT COUNT(*) FROM ranking");
-$rank_count = $stmt->fetchColumn();
+    // Schritt 1: Abrufen der aktuellen Anzahl von Zeilen in der Rangliste
+    $stmt = $pdo->query("SELECT COUNT(*) FROM ranking");
+    $rank_count = $stmt->fetchColumn();
 
-// Step 2: Insert the new player into the ranking table with the next available position
-$position = $rank_count + 1; // The next available position
-$pdo->exec("INSERT INTO ranking (player_id, position) VALUES ($player_id, $position)");}
+    // Schritt 2: Einfügen des neuen Spielers in die Rangliste mit der nächstverfügbaren Position
+    $position = $rank_count + 1; // Die nächstverfügbare Position
+    $pdo->exec("INSERT INTO ranking (player_id, position) VALUES ($player_id, $position)");
+}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Админ панель</title>
+    <title>Admin Panel</title>
 </head>
 <body>
-    <h1>Админ панель</h1>
+    <h1>Admin Panel</h1>
 
     <form method="POST">
-        <h2>Сбросить рейтинг</h2>
-        <button type="submit" name="reset">Сбросить рейтинг</button>
+        <h2>Ranking zurücksetzen</h2>
+        <button type="submit" name="reset">Ranking zurücksetzen</button>
     </form>
 
     <form method="POST">
-        <h2>Добавить нового игрока</h2>
-        <label for="name">Имя игрока:</label>
+        <h2>Neuen Spieler hinzufügen</h2>
+        <label for="name">Name des Spielers:</label>
         <input type="text" name="name" required>
-        <button type="submit" name="new_player">Добавить игрока</button>
+        <button type="submit" name="new_player">Spieler hinzufügen</button>
     </form>
 
 <table>
     <thead>
         <tr>
             <th>Position</th>
-            <th>Player</th>
-            <th>Games Played</th>
-            <th>Actions</th> <!-- New Actions column -->
+            <th>Spieler</th>
+            <th>Gespielte Spiele</th>
+            <th>Aktionen</th> <!-- Neue Aktionen-Spalte -->
         </tr>
     </thead>
     <tbody>
         <?php
-        // Fetch players from the ranking table along with their names from the players table
+        // Abrufen von Spielern aus der Rangliste zusammen mit ihren Namen aus der Spielern-Tabelle
         $stmt = $pdo->query("
                 SELECT r.position, p.name, p.id,
                        (SELECT COUNT(*) FROM games WHERE player1_id = p.id OR player2_id = p.id) AS games_played
                 FROM ranking r
-                right JOIN players p ON r.player_id = p.id
+                RIGHT JOIN players p ON r.player_id = p.id
                 ORDER BY r.position
         ");
 
         while ($row = $stmt->fetch()) {
             echo "<tr>";
             echo "<td>" . $row['position'] . "</td>";
-            echo "<td>" . htmlspecialchars($row['name']) . "</td>"; // Display player name
+            echo "<td>" . htmlspecialchars($row['name']) . "</td>"; // Anzeigen des Spielernamens
             echo "<td>" . $row['games_played'] . "</td>";
             
-            // Delete icon
+            // Löschen-Symbol
             echo "<td>";
-            echo "<a href='delete.php?id=" . $row['id'] . "' onclick='return confirm(\"Are you sure you want to delete this player?\");'>";
+            echo "<a href='delete.php?id=" . $row['id'] . "' onclick='return confirm(\"Sind Sie sicher, dass Sie diesen Spieler löschen möchten?\");'>";
             echo "<i class='fa-solid fa-trash'></i></a>";
             echo "</td>";
 
