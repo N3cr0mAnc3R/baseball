@@ -1,9 +1,7 @@
 <?php
 include 'header.php';
+include 'db.php'; 
 session_start();
-
-// Datenbankverbindung
-$pdo = new PDO('mysql:host=127.127.126.50;dbname=baseball_club', 'root', '');
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];
@@ -32,18 +30,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Login</title>
 </head>
 <body>
+<div class="container">
     <h1>Einloggen ins Admin-Panel</h1>
     <?php if (isset($error)): ?>
         <p style="color: red;"><?= $error ?></p>
     <?php endif; ?>
-    <form method="POST">
-        <label for="username">Benutzername:</label>
-        <input type="text" name="username" required>
-        
-        <label for="password">Passwort:</label>
-        <input type="password" name="password" required>
-        
-        <button type="submit">Einloggen</button>
+    <form method="POST"class="col-12 col-md-4 col-sm-6 container">
+<form>
+  <div class="mb-3">
+    <label for="username" class="form-label">Benutzername</label>
+    <input type="text" class="form-control" id="username" name="username">
+  </div>
+  <div class="mb-3">
+    <label for="password" class="form-label">Passwort</label>
+    <input type="password" class="form-control" id="password" name="password">
+  </div>
+  <button type="submit" class="btn btn-primary">Einloggen</button>
+</form>
+
     </form>
+</div>
 </body>
 </html>

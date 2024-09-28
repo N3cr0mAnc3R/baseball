@@ -1,9 +1,8 @@
 <?php
+$title = 'Alle Spiele';
 include 'header.php'; // Include your header file for navigation, styles, etc.
 session_start();
-
-// Database connection
-$pdo = new PDO('mysql:host=127.127.126.50;dbname=baseball_club', 'root', '');
+include 'db.php'; 
 
 // Fetch all games sorted by date in descending order
 $query = $pdo->query("

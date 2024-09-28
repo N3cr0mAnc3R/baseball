@@ -1,7 +1,7 @@
 <?php
+$title = 'Neue Spiele';
 include 'header.php';
-// Verbindung zur Datenbank herstellen
-$pdo = new PDO('mysql:host=127.127.126.50;dbname=baseball_club', 'root', '');
+include 'db.php'; 
 
 // Abrufen der Liste der Spieler mit ihren Positionen
 $players = $pdo->query("
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Aktualisierung der Spielerstatistik
     $pdo->exec("UPDATE players SET points = points + 10, wins = wins + 1 WHERE id = $winner");
-    $pdo->exec("UPDATE players SET points = $score1 + points, losses = losses + 1 WHERE id = $loser");
+    $pdo->exec("UPDATE players SET points = points + $score1, losses = losses + 1 WHERE id = $loser");
 
     // Verschieben des Gewinners auf die Position des Verlierers
     $stmt = $pdo->prepare("SELECT position FROM ranking WHERE player_id = :loser");
@@ -114,20 +114,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <div class="row">
 <div class="col-5">
         <label for="player1">Spieler 1:</label>
-        <select class="form-control" name="player1" id="player1" onchange="updatePlayerOptions();">
+        <select class="form-control" name="player1" id="player1" onchange="updatePlayerOptions();" required>
             <option value="">Wählen Sie Spieler 1</option> <!-- Leere Option -->
             <?php foreach ($players as $player): ?>
                 <option value="<?= $player['id'] ?>"><?= $player['name'] ?></option>
             <?php endforeach; ?>
         </select>
+<label for="score1">Punkte Spieler 1:</label>
+<select class="form-control" name="score1" required>
+    <?php for ($i = 0; $i <= 9; $i++): ?>
+        <option value="<?= $i ?>"><?= $i ?></option>
+    <?php endfor; ?>
+</select>
 
-
-        <label for="score1">Punkte Spieler 1:</label>
-        <input class="form-control" type="number" name="score1" min="0" max="10" value="0" required>
 </div>
 <div class="col-5">
         <label for="player2">Spieler 2:</label>
-        <select class="form-control" name="player2" id="player2" onchange="updatePlayerOptions();">
+        <select class="form-control" name="player2" id="player2" onchange="updatePlayerOptions();" required>
             <option value="">Wählen Sie Spieler 2</option> <!-- Leere Option -->
             <?php foreach ($players as $player): ?>
                 <option value="<?= $player['id'] ?>"><?= $player['name'] ?></option>
@@ -137,8 +140,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <label for="score2">Punkte Spieler 2:</label>
         <input class="form-control" class="form-control" type="number" id="score2" name="score2" value="10" min="0" max="10" readonly>
 </div>
-<div class="col">
-        <button class="btn btn-success" type="submit">Ergebnis speichern</button>
+<div class="col d-flex">
+        <button class="btn btn-success m-auto" type="submit">Ergebnis speichern</button>
 </div></div>
     </form>
 </div>

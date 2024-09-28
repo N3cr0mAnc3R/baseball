@@ -1,5 +1,6 @@
 <?php
 session_start();
+$title = 'Admin Panel';
 
 // Überprüfen, ob der Benutzer angemeldet ist
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
@@ -7,7 +8,7 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     exit;
 }
 include 'header.php';
-$pdo = new PDO('mysql:host=127.127.126.50;dbname=baseball_club', 'root', '');
+include 'db.php'; 
 
 // Zurücksetzen des Rankings
 if (isset($_POST['reset'])) {
@@ -44,29 +45,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['new_player'])) {
     $pdo->exec("INSERT INTO ranking (player_id, position) VALUES ($player_id, $position)");
 }
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Admin Panel</title>
-</head>
-<body>
+<div class="container">
     <h1>Admin Panel</h1>
 
     <form method="POST">
         <h2>Ranking zurücksetzen</h2>
-        <button type="submit" name="reset">Ranking zurücksetzen</button>
+        <button type="submit" name="reset" class="btn btn-outline-danger">Ranking zurücksetzen</button>
     </form>
-
+<hr>
     <form method="POST">
         <h2>Neuen Spieler hinzufügen</h2>
+<div class="d-flex mb-3">
         <label for="name">Name des Spielers:</label>
-        <input type="text" name="name" required>
-        <button type="submit" name="new_player">Spieler hinzufügen</button>
+        <input type="text" name="name" class="col-5 form-control ml-3 mr-3" required>
+        <button type="submit" name="new_player" class="btn btn-outline-primary">Spieler hinzufügen</button>
+</div>
     </form>
 
-<table>
+<table class="table table-bordered table-striped">
     <thead>
         <tr>
             <th>Position</th>
@@ -103,7 +99,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['new_player'])) {
         ?>
     </tbody>
 </table>
-
-
-</body>
-</html>
+</div>
